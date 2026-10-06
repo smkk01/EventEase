@@ -1,0 +1,69 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\coursera\\EventEase\\bin\\Debug\\net8.0\\wwwroot\\_framework\\blazor.webassembly.js",
+      "PackagePath": "staticwebassets\\_framework\\blazor.webassembly.js"
+    },
+    {
+      "Id": "C:\\coursera\\EventEase\\obj\\Debug\\net8.0\\compressed\\xjzp6be2rr.gz",
+      "PackagePath": "staticwebassets\\_framework\\blazor.webassembly.js.gz"
+    },
+    {
+      "Id": "C:\\coursera\\EventEase\\obj\\Debug\\net8.0\\scopedcss\\bundle\\EventEase.styles.css",
+      "PackagePath": "staticwebassets\\EventEase.styles.css"
+    },
+    {
+      "Id": "C:\\coursera\\EventEase\\wwwroot\\css\\app.css",
+      "PackagePath": "staticwebassets\\css\\app.css"
+    },
+    {
+      "Id": "C:\\coursera\\EventEase\\wwwroot\\css\\bootstrap\\bootstrap.min.css",
+      "PackagePath": "staticwebassets\\css\\bootstrap\\bootstrap.min.css"
+    },
+    {
+      "Id": "C:\\coursera\\EventEase\\wwwroot\\css\\bootstrap\\bootstrap.min.css.map",
+      "PackagePath": "staticwebassets\\css\\bootstrap\\bootstrap.min.css.map"
+    },
+    {
+      "Id": "C:\\coursera\\EventEase\\wwwroot\\favicon.png",
+      "PackagePath": "staticwebassets\\favicon.png"
+    },
+    {
+      "Id": "C:\\coursera\\EventEase\\wwwroot\\icon-192.png",
+      "PackagePath": "staticwebassets\\icon-192.png"
+    },
+    {
+      "Id": "C:\\coursera\\EventEase\\wwwroot\\index.html",
+      "PackagePath": "staticwebassets\\index.html"
+    },
+    {
+      "Id": "C:\\coursera\\EventEase\\wwwroot\\sample-data\\events.json",
+      "PackagePath": "staticwebassets\\sample-data\\events.json"
+    },
+    {
+      "Id": "C:\\coursera\\EventEase\\wwwroot\\sample-data\\registrations.json",
+      "PackagePath": "staticwebassets\\sample-data\\registrations.json"
+    },
+    {
+      "Id": "C:\\coursera\\EventEase\\wwwroot\\sample-data\\weather.json",
+      "PackagePath": "staticwebassets\\sample-data\\weather.json"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.EventEase.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.EventEase.props",
+      "PackagePath": "build\\EventEase.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.EventEase.props",
+      "PackagePath": "buildMultiTargeting\\EventEase.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.EventEase.props",
+      "PackagePath": "buildTransitive\\EventEase.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

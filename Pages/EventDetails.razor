@@ -1,0 +1,193 @@
+@page "/events/{Id:guid}"
+@inject IEventService EventService
+@inject IRegistrationService RegistrationService
+@inject BrowserSessionService BrowserSession
+
+<PageTitle>@(_event?.Title ?? "Event details") | EventEase</PageTitle>
+
+<div class="detail-page">
+    <a class="back-link" href="/events">← Back to events</a>
+
+    @if (!string.IsNullOrWhiteSpace(_error))
+    {
+        <div class="alert alert-danger" role="alert">@_error</div>
+    }
+    else if (_loading)
+    {
+        <p class="text-secondary" role="status">Loading event details…</p>
+    }
+    else if (_event is null)
+    {
+        <div class="alert alert-warning" role="alert">This event could not be found. <a href="/events">Return to events</a>.</div>
+    }
+    else
+    {
+        <section class="detail-hero">
+            <div>
+                <span class="category-pill">@_event.Category</span>
+                <h1 class="mt-3">@_event.Title</h1>
+                <p class="lead text-secondary mb-0">@_event.Description</p>
+            </div>
+            <a class="btn btn-outline-primary" href="@($"/events/edit/{_event.Id}")">Edit event</a>
+        </section>
+
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <section class="form-card h-100">
+                    <h2 class="h4 mb-4">Event information</h2>
+                    <dl class="detail-meta">
+                        <div><dt>Starts</dt><dd>@_event.StartsAt.ToString("dddd, MMMM d, yyyy · h:mm tt")</dd></div>
+                        <div><dt>Ends</dt><dd>@_event.EndsAt.ToString("dddd, MMMM d, yyyy · h:mm tt")</dd></div>
+                        <div><dt>Location</dt><dd>@_event.Location</dd></div>
+                        <div><dt>Availability</dt><dd>@_availableSeats of @_event.Capacity seats available</dd></div>
+                    </dl>
+                </section>
+            </div>
+            <div class="col-lg-5">
+                <section class="form-card h-100">
+                    <h2 class="h4">Your attendance</h2>
+                    <p class="small text-secondary">Browser session active · @_sessionId[..8]</p>
+                    @if (_sessionRegistration is not null)
+                    {
+                        @if (_sessionRegistration.CheckedInAt is not null)
+                        {
+                            <div class="alert alert-success mb-0" role="status">
+                                Attendance confirmed at @_sessionRegistration.CheckedInAt.Value.ToString("MMM d, yyyy · h:mm tt").
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-secondary">You are registered. Check in when you arrive at the event.</p>
+                            <button class="btn btn-primary w-100" type="button" disabled="@_checkingIn" @onclick="CheckInAsync">
+                                @(_checkingIn ? "Checking in…" : "Check in")
+                            </button>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-secondary">
+                            @_availableSeats of @_event.Capacity seats are available.
+                        </p>
+                        @if (_availableSeats == 0)
+                        {
+                            <p class="text-secondary mb-0">This event is fully booked.</p>
+                        }
+                        else
+                        {
+                            <a class="btn btn-primary w-100" href="@($"/events/{_event.Id:D}/register")">Register for this event</a>
+                        }
+                    }
+                </section>
+            </div>
+            <div class="col-12">
+                <section class="form-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2 class="h4 mb-0">Attendance</h2>
+                        <span class="text-secondary">
+                            @_registrations.Count(item => item.CheckedInAt is not null) checked in / @_registrations.Count attendee@( _registrations.Count == 1 ? string.Empty : "s")
+                        </span>
+                    </div>
+                    @if (_registrations.Count == 0)
+                    {
+                        <p class="text-secondary mb-0">No registrations yet.</p>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table mb-0">
+                                <thead><tr><th scope="col">Attendee</th><th scope="col">Email</th><th scope="col">Registered</th><th scope="col">Attendance</th></tr></thead>
+                                <tbody>
+                                    @foreach (var registration in _registrations)
+                                    {
+                                        <tr @key="registration.Id">
+                                            <td>@registration.AttendeeName</td>
+                                            <td><a href="@($"mailto:{registration.Email}")">@registration.Email</a></td>
+                                            <td>@registration.RegisteredAt.ToString("MMM d, yyyy · h:mm tt")</td>
+                                            <td>
+                                                @if (registration.CheckedInAt is DateTime checkedInAt)
+                                                {
+                                                    <span class="text-success">Checked in · @checkedInAt.ToString("MMM d, h:mm tt")</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-secondary">Not checked in</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </section>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private Event? _event;
+    private IReadOnlyList<EventRegistration> _registrations = [];
+    private bool _loading = true;
+    private bool _checkingIn;
+    private string _sessionId = string.Empty;
+    private Guid? _sessionRegistrationId;
+    private string? _error;
+    private int _availableSeats => _event is null ? 0 : Math.Max(0, _event.Capacity - _registrations.Count);
+    private EventRegistration? _sessionRegistration =>
+        _sessionRegistrationId is Guid registrationId
+            ? _registrations.FirstOrDefault(item => item.Id == registrationId)
+            : null;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _loading = true;
+        _error = null;
+        _sessionRegistrationId = null;
+        try
+        {
+            _sessionId = await BrowserSession.GetSessionIdAsync();
+            _event = await EventService.GetByIdAsync(Id);
+            if (_event is not null)
+            {
+                _registrations = await RegistrationService.GetByEventIdAsync(Id);
+                _sessionRegistrationId = await BrowserSession.GetRegistrationIdAsync(Id);
+            }
+        }
+        catch (Exception exception)
+        {
+            _error = $"The event details could not be loaded: {exception.Message}";
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task CheckInAsync()
+    {
+        if (_event is null || _sessionRegistrationId is not Guid registrationId)
+        {
+            return;
+        }
+
+        _checkingIn = true;
+        _error = null;
+        try
+        {
+            await RegistrationService.CheckInAsync(_event.Id, registrationId);
+            _registrations = await RegistrationService.GetByEventIdAsync(_event.Id);
+        }
+        catch (Exception exception)
+        {
+            _error = $"Attendance could not be recorded: {exception.Message}";
+        }
+        finally
+        {
+            _checkingIn = false;
+        }
+    }
+}

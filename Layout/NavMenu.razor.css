@@ -1,0 +1,29 @@
+.navbar {
+    min-height: 4.5rem;
+}
+
+.navbar-brand {
+    color: #16213e;
+    font-weight: 750;
+    letter-spacing: -.03em;
+}
+
+.brand-mark {
+    display: inline-grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: .65rem;
+    color: #fff;
+    background: #5845d8;
+    font-size: 1rem;
+}
+
+.nav-link {
+    color: #475569;
+    font-weight: 600;
+}
+
+.nav-link.active {
+    color: #5845d8;
+}

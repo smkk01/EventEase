@@ -1,0 +1,143 @@
+@page "/events/{Id:guid}/register"
+@inject IEventService EventService
+@inject IRegistrationService RegistrationService
+@inject BrowserSessionService BrowserSession
+@inject NavigationManager Navigation
+
+<PageTitle>@(_event is null ? "Event registration" : $"Register for {_event.Title}") | EventEase</PageTitle>
+
+<div class="form-page">
+    <a class="back-link" href="@($"/events/{Id:D}")">← Back to event details</a>
+
+    @if (!string.IsNullOrWhiteSpace(_error))
+    {
+        <div class="alert alert-danger" role="alert">@_error</div>
+    }
+    else if (_loading)
+    {
+        <p class="text-secondary" role="status">Loading registration…</p>
+    }
+    else if (_event is null)
+    {
+        <div class="alert alert-warning" role="alert">
+            This event could not be found. <a href="/events">Return to the event list</a>.
+        </div>
+    }
+    else
+    {
+        <header class="mb-4">
+            <p class="eyebrow">EVENT REGISTRATION</p>
+            <h1>Register for @_event.Title</h1>
+            <p class="text-secondary mb-0">
+                @_event.StartsAt.ToString("ddd, MMM d, yyyy · h:mm tt") · @_event.Location
+            </p>
+        </header>
+
+        <section class="form-card">
+            @if (_sessionRegistration is not null)
+            {
+                <div class="alert alert-success" role="status">
+                    You are already registered for this event.
+                </div>
+                <a class="btn btn-primary" href="@($"/events/{_event.Id:D}")">View event details and check in</a>
+            }
+            else if (_availableSeats == 0)
+            {
+                <p class="text-secondary mb-3">This event is fully booked.</p>
+                <a class="btn btn-outline-primary" href="@($"/events/{_event.Id:D}")">Back to event details</a>
+            }
+            else
+            {
+                <p class="text-secondary">@_availableSeats seat@(_availableSeats == 1 ? string.Empty : "s") available.</p>
+                <EditForm Model="_form" OnValidSubmit="RegisterAsync" FormName="event-registration">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary class="alert alert-danger" />
+                    <div class="mb-3">
+                        <label class="form-label" for="attendeeName">Your name</label>
+                        <InputText id="attendeeName" class="form-control" @bind-Value="_form.AttendeeName" maxlength="100" />
+                        <ValidationMessage For="() => _form.AttendeeName" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="email">Email address</label>
+                        <InputText id="email" class="form-control" type="email" @bind-Value="_form.Email" maxlength="254" />
+                        <ValidationMessage For="() => _form.Email" />
+                    </div>
+                    <div class="d-flex flex-wrap gap-2 justify-content-end pt-3 border-top">
+                        <a class="btn btn-light" href="@($"/events/{_event.Id:D}")">Cancel</a>
+                        <button class="btn btn-primary" type="submit" disabled="@_registering">
+                            @(_registering ? "Registering…" : "Register now")
+                        </button>
+                    </div>
+                </EditForm>
+            }
+        </section>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private Event? _event;
+    private IReadOnlyList<EventRegistration> _registrations = [];
+    private readonly RegistrationFormModel _form = new();
+    private bool _loading = true;
+    private bool _registering;
+    private Guid? _sessionRegistrationId;
+    private string? _error;
+    private int _availableSeats => _event is null ? 0 : Math.Max(0, _event.Capacity - _registrations.Count);
+    private EventRegistration? _sessionRegistration =>
+        _sessionRegistrationId is Guid registrationId
+            ? _registrations.FirstOrDefault(item => item.Id == registrationId)
+            : null;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _loading = true;
+        _error = null;
+        _sessionRegistrationId = null;
+        try
+        {
+            _event = await EventService.GetByIdAsync(Id);
+            if (_event is not null)
+            {
+                _registrations = await RegistrationService.GetByEventIdAsync(Id);
+                _sessionRegistrationId = await BrowserSession.GetRegistrationIdAsync(Id);
+            }
+        }
+        catch (Exception exception)
+        {
+            _error = $"The registration page could not be loaded: {exception.Message}";
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task RegisterAsync()
+    {
+        if (_event is null)
+        {
+            return;
+        }
+
+        _registering = true;
+        _error = null;
+        try
+        {
+            var registration = _form.ToRegistration(_event.Id);
+            await RegistrationService.RegisterAsync(registration, _event.Capacity);
+            await BrowserSession.AssociateRegistrationAsync(_event.Id, registration.Id);
+            Navigation.NavigateTo($"/events/{_event.Id:D}");
+        }
+        catch (Exception exception)
+        {
+            _error = $"Registration could not be completed: {exception.Message}";
+        }
+        finally
+        {
+            _registering = false;
+        }
+    }
+}

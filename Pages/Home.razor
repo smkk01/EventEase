@@ -1,0 +1,115 @@
+@page "/"
+@page "/events"
+@inject IEventService EventService
+@inject IRegistrationService RegistrationService
+@inject IJSRuntime JS
+
+<PageTitle>Events | EventEase</PageTitle>
+
+<section class="page-heading">
+    <div>
+        <p class="eyebrow">YOUR EVENT SPACE</p>
+        <h1>Events</h1>
+        <p class="text-secondary mb-0">Browse event details, registrations, and event management tools.</p>
+    </div>
+    <a class="btn btn-primary btn-lg" href="/events/new">Create event</a>
+</section>
+
+@if (!string.IsNullOrWhiteSpace(_error))
+{
+    <div class="alert alert-danger" role="alert">@_error</div>
+}
+else if (_loading)
+{
+    <p role="status" class="text-secondary">Loading events…</p>
+}
+else if (_events.Count == 0)
+{
+    <div class="empty-state">
+        <h2>No events yet</h2>
+        <p class="text-secondary">Create your first event to get started.</p>
+        <a class="btn btn-primary" href="/events/new">Create your first event</a>
+    </div>
+}
+else
+{
+    <div class="row g-4">
+        @foreach (var item in _events)
+        {
+            <div class="col-12 col-md-6 col-xl-4" @key="item.Id">
+                <article class="card event-card h-100">
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+                            <span class="category-pill">@item.Category</span>
+                            <span class="capacity-label">@item.Capacity seats</span>
+                        </div>
+                        <h2 class="h4">@item.Title</h2>
+                        <p class="text-secondary event-description">@item.Description</p>
+                        <dl class="event-meta mt-auto">
+                            <div><dt>Date</dt><dd>@item.StartsAt.ToString("ddd, MMM d, yyyy · h:mm tt")</dd></div>
+                            <div><dt>Location</dt><dd>@item.Location</dd></div>
+                            <div><dt>Ends</dt><dd>@item.EndsAt.ToString("h:mm tt")</dd></div>
+                        </dl>
+                        <div class="d-flex gap-2 pt-3 border-top">
+                            <a class="btn btn-outline-primary flex-grow-1" href="@($"/events/{item.Id}")">View details</a>
+                            <a class="btn btn-light" href="@($"/events/edit/{item.Id}")">Edit</a>
+                            <button class="btn btn-outline-danger" type="button" disabled="@_deleting"
+                                    @onclick="() => DeleteAsync(item)">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private IReadOnlyList<Event> _events = [];
+    private bool _loading = true;
+    private bool _deleting;
+    private string? _error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _events = await EventService.GetAllAsync();
+        }
+        catch (Exception exception)
+        {
+            _error = $"Events could not be loaded: {exception.Message}";
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task DeleteAsync(Event item)
+    {
+        var confirmed = await JS.InvokeAsync<bool>("confirm", $"Delete “{item.Title}”? This cannot be undone.");
+        if (!confirmed)
+        {
+            return;
+        }
+
+        _deleting = true;
+        _error = null;
+        try
+        {
+            await EventService.DeleteAsync(item.Id);
+            await RegistrationService.DeleteForEventAsync(item.Id);
+            _events = await EventService.GetAllAsync();
+        }
+        catch (Exception exception)
+        {
+            _error = $"The event could not be deleted: {exception.Message}";
+        }
+        finally
+        {
+            _deleting = false;
+        }
+    }
+}

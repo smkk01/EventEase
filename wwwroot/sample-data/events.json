@@ -1,0 +1,32 @@
+[
+  {
+    "id": "9a2e0d49-23dd-4cd6-8762-72b6d22aeb93",
+    "title": "Community Product Design Meetup",
+    "description": "Meet local designers for an evening of practical talks, portfolio feedback, and relaxed networking.",
+    "location": "The Foundry, Downtown",
+    "category": "Networking",
+    "startsAt": "2026-11-12T18:00:00",
+    "endsAt": "2026-11-12T20:30:00",
+    "capacity": 80
+  },
+  {
+    "id": "2c74463c-7e14-4a72-8d50-c959c574f6e7",
+    "title": "Weekend Pottery Workshop",
+    "description": "Learn hand-building basics, shape your own ceramic piece, and enjoy a beginner-friendly creative session.",
+    "location": "Clay House Studio",
+    "category": "Workshop",
+    "startsAt": "2026-11-21T10:00:00",
+    "endsAt": "2026-11-21T13:00:00",
+    "capacity": 18
+  },
+  {
+    "id": "8019d159-0f0d-481a-84c3-e14e955b5212",
+    "title": "Autumn Charity Fun Run",
+    "description": "A welcoming 5K for runners and walkers. Bring friends and support neighborhood youth programs.",
+    "location": "Riverside Park, East Gate",
+    "category": "Community",
+    "startsAt": "2026-12-05T08:30:00",
+    "endsAt": "2026-12-05T11:00:00",
+    "capacity": 250
+  }
+]

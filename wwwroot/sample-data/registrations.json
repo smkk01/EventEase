@@ -1,0 +1,16 @@
+[
+  {
+    "id": "68e77e0b-54a9-469b-9e6c-c3021f6b4c25",
+    "eventId": "9a2e0d49-23dd-4cd6-8762-72b6d22aeb93",
+    "attendeeName": "Maya Wilson",
+    "email": "maya.wilson@example.com",
+    "registeredAt": "2026-10-01T09:30:00"
+  },
+  {
+    "id": "5b9698d4-d756-4c0d-a926-e5dc393790aa",
+    "eventId": "9a2e0d49-23dd-4cd6-8762-72b6d22aeb93",
+    "attendeeName": "Daniel Ortiz",
+    "email": "daniel.ortiz@example.com",
+    "registeredAt": "2026-10-03T15:45:00"
+  }
+]

@@ -1,0 +1,156 @@
+@page "/events/new"
+@page "/events/edit/{Id:guid}"
+@inject IEventService EventService
+@inject NavigationManager Navigation
+
+<PageTitle>@(_isEdit ? "Edit event" : "Create event") | EventEase</PageTitle>
+
+<div class="form-page">
+    <a class="back-link" href="/events">← Back to events</a>
+    <header class="mb-4">
+        <p class="eyebrow">@(_isEdit ? "EVENT DETAILS" : "NEW EVENT")</p>
+        <h1>@(_isEdit ? "Edit event" : "Create an event")</h1>
+        <p class="text-secondary mb-0">Share the details people need to join you.</p>
+    </header>
+
+    @if (!string.IsNullOrWhiteSpace(_error))
+    {
+        <div class="alert alert-danger" role="alert">@_error</div>
+    }
+    else if (_loading)
+    {
+        <p role="status" class="text-secondary">Loading event…</p>
+    }
+    else if (_notFound)
+    {
+        <div class="alert alert-warning" role="alert">
+            This event no longer exists. <a href="/events">Return to the event list</a>.
+        </div>
+    }
+    else
+    {
+        <EditForm Model="_form" OnValidSubmit="SaveAsync" FormName="event-editor">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="alert alert-danger" />
+            <section class="form-card">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label" for="title">Event name</label>
+                        <InputText id="title" class="form-control" @bind-Value="_form.Title" maxlength="100" />
+                        <ValidationMessage For="() => _form.Title" />
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="description">Description</label>
+                        <InputTextArea id="description" class="form-control" @bind-Value="_form.Description" rows="4" maxlength="2000" />
+                        <ValidationMessage For="() => _form.Description" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="category">Category</label>
+                        <InputText id="category" class="form-control" @bind-Value="_form.Category" maxlength="60" placeholder="e.g. Workshop" />
+                        <ValidationMessage For="() => _form.Category" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="location">Location</label>
+                        <InputText id="location" class="form-control" @bind-Value="_form.Location" maxlength="150" placeholder="Venue or address" />
+                        <ValidationMessage For="() => _form.Location" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="startsAt">Starts</label>
+                        <InputDate id="startsAt" class="form-control" Type="InputDateType.DateTimeLocal" @bind-Value="_form.StartsAt" />
+                        <ValidationMessage For="() => _form.StartsAt" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="endsAt">Ends</label>
+                        <InputDate id="endsAt" class="form-control" Type="InputDateType.DateTimeLocal" @bind-Value="_form.EndsAt" />
+                        <ValidationMessage For="() => _form.EndsAt" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="capacity">Capacity</label>
+                        <InputNumber id="capacity" class="form-control" @bind-Value="_form.Capacity" min="1" max="100000" />
+                        <ValidationMessage For="() => _form.Capacity" />
+                    </div>
+                </div>
+                <div class="d-flex flex-wrap justify-content-end gap-2 mt-4 pt-3 border-top">
+                    <a class="btn btn-light" href="/events">Cancel</a>
+                    <button class="btn btn-primary px-4" type="submit" disabled="@_saving">
+                        @(_saving ? "Saving…" : _isEdit ? "Save changes" : "Create event")
+                    </button>
+                </div>
+            </section>
+        </EditForm>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private EventFormModel _form = new();
+    private bool _loading = true;
+    private bool _saving;
+    private bool _notFound;
+    private bool _isEdit;
+    private string? _error;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _isEdit = Id != Guid.Empty;
+        _loading = true;
+        _notFound = false;
+        _error = null;
+        try
+        {
+            if (_isEdit)
+            {
+                var item = await EventService.GetByIdAsync(Id);
+                if (item is null)
+                {
+                    _notFound = true;
+                }
+                else
+                {
+                    _form = EventFormModel.FromEvent(item);
+                }
+            }
+            else
+            {
+                _form = new EventFormModel();
+            }
+        }
+        catch (Exception exception)
+        {
+            _error = $"The event could not be loaded: {exception.Message}";
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task SaveAsync()
+    {
+        _saving = true;
+        _error = null;
+        try
+        {
+            if (_isEdit)
+            {
+                await EventService.UpdateAsync(_form.ToEvent(Id));
+            }
+            else
+            {
+                await EventService.CreateAsync(_form.ToEvent(Guid.NewGuid()));
+            }
+
+            Navigation.NavigateTo("/events");
+        }
+        catch (Exception exception)
+        {
+            _error = $"The event could not be saved: {exception.Message}";
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+}
