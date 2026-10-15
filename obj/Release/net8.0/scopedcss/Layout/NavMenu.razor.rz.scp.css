@@ -1,0 +1,29 @@
+.navbar[b-9quvq08be2] {
+    min-height: 4.5rem;
+}
+
+.navbar-brand[b-9quvq08be2] {
+    color: #16213e;
+    font-weight: 750;
+    letter-spacing: -.03em;
+}
+
+.brand-mark[b-9quvq08be2] {
+    display: inline-grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: .65rem;
+    color: #fff;
+    background: #5845d8;
+    font-size: 1rem;
+}
+
+.nav-link[b-9quvq08be2] {
+    color: #475569;
+    font-weight: 600;
+}
+
+.nav-link.active[b-9quvq08be2] {
+    color: #5845d8;
+}
