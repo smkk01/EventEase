@@ -29,6 +29,15 @@ jobs:
       - name: Publish app
         run: dotnet publish ./EventEase.csproj -c Release -o ./publish
 
+      - name: Verify Blazor WebAssembly integrity
+        run: |
+          expected=$(jq -r '.resources.wasmNative["dotnet.native.wasm"]' publish/wwwroot/_framework/blazor.boot.json)
+          actual="sha256-$(openssl dgst -sha256 -binary publish/wwwroot/_framework/dotnet.native.wasm | base64 -w 0)"
+          if [ "$expected" != "$actual" ]; then
+            echo "WASM integrity mismatch: expected $expected, got $actual"
+            exit 1
+          fi
+
       - name: Configure GitHub Pages paths
         run: |
           sed -i 's|<base href="/" />|<base href="/EventEase/" />|' publish/wwwroot/index.html
