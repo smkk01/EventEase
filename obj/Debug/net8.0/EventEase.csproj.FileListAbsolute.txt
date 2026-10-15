@@ -1029,3 +1029,4 @@ C:\coursera\EventEase\obj\Debug\net8.0\EventEase.dll
 C:\coursera\EventEase\obj\Debug\net8.0\refint\EventEase.dll
 C:\coursera\EventEase\obj\Debug\net8.0\EventEase.pdb
 C:\coursera\EventEase\obj\Debug\net8.0\ref\EventEase.dll
+C:\coursera\EventEase\obj\Debug\net8.0\EventEase.sourcelink.json
