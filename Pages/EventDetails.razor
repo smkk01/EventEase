@@ -28,7 +28,7 @@
                 <h1 class="mt-3">@_event.Title</h1>
                 <p class="lead text-secondary mb-0">@_event.Description</p>
             </div>
-            <a class="btn btn-outline-primary" href="@($"/events/edit/{_event.Id}")">Edit event</a>
+            <a class="btn btn-outline-primary" href="@($"events/edit/{_event.Id}")">Edit event</a>
         </section>
 
         <div class="row g-4">
@@ -74,7 +74,7 @@
                         }
                         else
                         {
-                            <a class="btn btn-primary w-100" href="@($"/events/{_event.Id:D}/register")">Register for this event</a>
+                            <a class="btn btn-primary w-100" href="@($"events/{_event.Id:D}/register")">Register for this event</a>
                         }
                     }
                 </section>

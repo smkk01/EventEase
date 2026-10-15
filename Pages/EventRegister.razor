@@ -7,7 +7,7 @@
 <PageTitle>@(_event is null ? "Event registration" : $"Register for {_event.Title}") | EventEase</PageTitle>
 
 <div class="form-page">
-    <a class="back-link" href="@($"/events/{Id:D}")">← Back to event details</a>
+    <a class="back-link" href="@($"events/{Id:D}")">← Back to event details</a>
 
     @if (!string.IsNullOrWhiteSpace(_error))
     {
@@ -39,12 +39,12 @@
                 <div class="alert alert-success" role="status">
                     You are already registered for this event.
                 </div>
-                <a class="btn btn-primary" href="@($"/events/{_event.Id:D}")">View event details and check in</a>
+                <a class="btn btn-primary" href="@($"events/{_event.Id:D}")">View event details and check in</a>
             }
             else if (_availableSeats == 0)
             {
                 <p class="text-secondary mb-3">This event is fully booked.</p>
-                <a class="btn btn-outline-primary" href="@($"/events/{_event.Id:D}")">Back to event details</a>
+                <a class="btn btn-outline-primary" href="@($"events/{_event.Id:D}")">Back to event details</a>
             }
             else
             {
@@ -63,7 +63,7 @@
                         <ValidationMessage For="() => _form.Email" />
                     </div>
                     <div class="d-flex flex-wrap gap-2 justify-content-end pt-3 border-top">
-                        <a class="btn btn-light" href="@($"/events/{_event.Id:D}")">Cancel</a>
+                        <a class="btn btn-light" href="@($"events/{_event.Id:D}")">Cancel</a>
                         <button class="btn btn-primary" type="submit" disabled="@_registering">
                             @(_registering ? "Registering…" : "Register now")
                         </button>
