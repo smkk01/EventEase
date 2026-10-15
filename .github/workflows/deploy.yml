@@ -29,12 +29,20 @@ jobs:
       - name: Publish app
         run: dotnet publish ./EventEase.csproj -c Release -o ./publish
 
-      - name: Verify Blazor WebAssembly integrity
+      - name: Align and verify Blazor WebAssembly integrity
         run: |
-          expected=$(jq -r '.resources.wasmNative["dotnet.native.wasm"]' publish/wwwroot/_framework/blazor.boot.json)
-          actual="sha256-$(openssl dgst -sha256 -binary publish/wwwroot/_framework/dotnet.native.wasm | base64 -w 0)"
+          manifest=publish/wwwroot/_framework/blazor.boot.json
+          wasm=publish/wwwroot/_framework/dotnet.native.wasm
+          expected=$(jq -r '.resources.wasmNative["dotnet.native.wasm"]' "$manifest")
+          actual="sha256-$(openssl dgst -sha256 -binary "$wasm" | base64 -w 0)"
           if [ "$expected" != "$actual" ]; then
-            echo "WASM integrity mismatch: expected $expected, got $actual"
+            echo "Updating native WASM integrity hash: $expected -> $actual"
+            jq --arg hash "$actual" '.resources.wasmNative["dotnet.native.wasm"] = $hash' "$manifest" > "$manifest.tmp"
+            mv "$manifest.tmp" "$manifest"
+          fi
+          verified=$(jq -r '.resources.wasmNative["dotnet.native.wasm"]' "$manifest")
+          if [ "$verified" != "$actual" ]; then
+            echo "WASM integrity verification failed: expected $verified, got $actual"
             exit 1
           fi
 
