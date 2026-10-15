@@ -6,7 +6,7 @@
 <PageTitle>@(_isEdit ? "Edit event" : "Create event") | EventEase</PageTitle>
 
 <div class="form-page">
-    <a class="back-link" href="/events">← Back to events</a>
+    <a class="back-link" href="events">← Back to events</a>
     <header class="mb-4">
         <p class="eyebrow">@(_isEdit ? "EVENT DETAILS" : "NEW EVENT")</p>
         <h1>@(_isEdit ? "Edit event" : "Create an event")</h1>
@@ -24,7 +24,7 @@
     else if (_notFound)
     {
         <div class="alert alert-warning" role="alert">
-            This event no longer exists. <a href="/events">Return to the event list</a>.
+            This event no longer exists. <a href="events">Return to the event list</a>.
         </div>
     }
     else
@@ -71,7 +71,7 @@
                     </div>
                 </div>
                 <div class="d-flex flex-wrap justify-content-end gap-2 mt-4 pt-3 border-top">
-                    <a class="btn btn-light" href="/events">Cancel</a>
+                    <a class="btn btn-light" href="events">Cancel</a>
                     <button class="btn btn-primary px-4" type="submit" disabled="@_saving">
                         @(_saving ? "Saving…" : _isEdit ? "Save changes" : "Create event")
                     </button>
@@ -142,7 +142,7 @@
                 await EventService.CreateAsync(_form.ToEvent(Guid.NewGuid()));
             }
 
-            Navigation.NavigateTo("/events");
+            Navigation.NavigateTo("events");
         }
         catch (Exception exception)
         {

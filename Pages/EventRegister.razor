@@ -20,7 +20,7 @@
     else if (_event is null)
     {
         <div class="alert alert-warning" role="alert">
-            This event could not be found. <a href="/events">Return to the event list</a>.
+            This event could not be found. <a href="events">Return to the event list</a>.
         </div>
     }
     else
@@ -129,7 +129,7 @@
             var registration = _form.ToRegistration(_event.Id);
             await RegistrationService.RegisterAsync(registration, _event.Capacity);
             await BrowserSession.AssociateRegistrationAsync(_event.Id, registration.Id);
-            Navigation.NavigateTo($"/events/{_event.Id:D}");
+            Navigation.NavigateTo($"events/{_event.Id:D}");
         }
         catch (Exception exception)
         {

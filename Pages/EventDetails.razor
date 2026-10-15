@@ -6,7 +6,7 @@
 <PageTitle>@(_event?.Title ?? "Event details") | EventEase</PageTitle>
 
 <div class="detail-page">
-    <a class="back-link" href="/events">← Back to events</a>
+    <a class="back-link" href="events">← Back to events</a>
 
     @if (!string.IsNullOrWhiteSpace(_error))
     {
@@ -18,7 +18,7 @@
     }
     else if (_event is null)
     {
-        <div class="alert alert-warning" role="alert">This event could not be found. <a href="/events">Return to events</a>.</div>
+        <div class="alert alert-warning" role="alert">This event could not be found. <a href="events">Return to events</a>.</div>
     }
     else
     {

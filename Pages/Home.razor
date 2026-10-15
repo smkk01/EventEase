@@ -12,7 +12,7 @@
         <h1>Events</h1>
         <p class="text-secondary mb-0">Browse event details, registrations, and event management tools.</p>
     </div>
-    <a class="btn btn-primary btn-lg" href="/events/new">Create event</a>
+    <a class="btn btn-primary btn-lg" href="events/new">Create event</a>
 </section>
 
 @if (!string.IsNullOrWhiteSpace(_error))
@@ -28,7 +28,7 @@ else if (_events.Count == 0)
     <div class="empty-state">
         <h2>No events yet</h2>
         <p class="text-secondary">Create your first event to get started.</p>
-        <a class="btn btn-primary" href="/events/new">Create your first event</a>
+        <a class="btn btn-primary" href="events/new">Create your first event</a>
     </div>
 }
 else
@@ -51,8 +51,8 @@ else
                             <div><dt>Ends</dt><dd>@item.EndsAt.ToString("h:mm tt")</dd></div>
                         </dl>
                         <div class="d-flex gap-2 pt-3 border-top">
-                            <a class="btn btn-outline-primary flex-grow-1" href="@($"/events/{item.Id}")">View details</a>
-                            <a class="btn btn-light" href="@($"/events/edit/{item.Id}")">Edit</a>
+                            <a class="btn btn-outline-primary flex-grow-1" href="@($"events/{item.Id}")">View details</a>
+                            <a class="btn btn-light" href="@($"events/edit/{item.Id}")">Edit</a>
                             <button class="btn btn-outline-danger" type="button" disabled="@_deleting"
                                     @onclick="() => DeleteAsync(item)">
                                 Delete

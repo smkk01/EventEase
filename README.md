@@ -43,6 +43,10 @@ dotnet build
 | `/events/{id}` | View event details and attendee attendance; check in your registration |
 | `/events/{id}/register` | Register for an event |
 
+## GitHub Pages deployment
+
+The GitHub Actions workflow publishes the app at `https://smkk01.github.io/EventEase/`. Internal links are relative to the app's base path so navigation works under the repository subpath. The workflow also publishes `404.html` as a fallback so directly opening or refreshing an event route loads the Blazor app.
+
 ## Data and storage
 
 The app is a client-side Blazor WebAssembly application and does not currently connect to a server-side database or API. On first use in a browser, it loads the initial data from [`wwwroot/sample-data/events.json`](wwwroot/sample-data/events.json) and [`wwwroot/sample-data/registrations.json`](wwwroot/sample-data/registrations.json). Changes are saved in that browser's `localStorage`, and saved data takes precedence over the sample files on later visits.
